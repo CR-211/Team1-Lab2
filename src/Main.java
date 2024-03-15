@@ -1,5 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,11 +8,6 @@ class Store {
     private boolean producersFinished = false;
     private boolean consumersFinished = false;
     private int producedCount = 0;
-    private JTextArea textArea;
-
-    public Store(JTextArea textArea) {
-        this.textArea = textArea;
-    }
 
     public synchronized void produce(int producerId) {
         Random random = new Random();
@@ -29,10 +22,10 @@ class Store {
                 stockList.add(randomNumber2);
 
                 producedCount += 2;
-                textArea.append("Producatorul " + producerId + " a generat: " + randomNumber1 + ", " + randomNumber2 + ". Total generat: " + producedCount + "\n");
+                System.out.println("Producer " + producerId + " generated: " + randomNumber1 + ", " + randomNumber2 + ". Total generated: " + producedCount);
                 displayStock();
                 try {
-                    Thread.sleep(100); // Mic wait de 100 de milisecunde
+                    Thread.sleep(100); // Wait for 100 milliseconds
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -42,7 +35,7 @@ class Store {
                 randomNumber1 = random.nextInt(100) * 2;
                 stockList.add(randomNumber1);
                 producedCount++;
-                textArea.append("Producatorul " + producerId + " a generat: " + randomNumber1 + ". Total generat: " + producedCount + "\n");
+                System.out.println("Producer " + producerId + " generated: " + randomNumber1 + ". Total generated: " + producedCount);
                 displayStock();
                 try {
                     Thread.sleep(100);
@@ -74,7 +67,7 @@ class Store {
                 int consumedNumber1 = stockList.remove(0);
                 int consumedNumber2 = stockList.size() > 0 ? stockList.remove(0) : -1;
 
-                textArea.append("Consumatorul " + consumerId + " a consumat: " + consumedNumber1 + (consumedNumber2 != -1 ? ", " + consumedNumber2 : "") + "\n");
+                System.out.println("Consumer " + consumerId + " consumed: " + consumedNumber1 + (consumedNumber2 != -1 ? ", " + consumedNumber2 : ""));
                 displayStock();
                 try {
                     Thread.sleep(100);
@@ -116,7 +109,7 @@ class Store {
 
     private void displayStock() {
         int currentSize = stockList.size();
-        textArea.append("Stocul: " + currentSize + " din " + capacity + "\n");
+        System.out.println("Stock: " + currentSize + " out of " + capacity);
     }
 
     public synchronized void setProducersFinished() {
@@ -162,16 +155,7 @@ class Consumer extends Thread {
 
 public class Main {
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Producer-Consumer Problem");
-        JTextArea textArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        frame.setLayout(new BorderLayout());
-        frame.add(scrollPane, BorderLayout.CENTER);
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-
-        Store store = new Store(textArea);
+        Store store = new Store();
 
         Producer producer1 = new Producer(store, 1);
         Producer producer2 = new Producer(store, 2);
@@ -197,11 +181,11 @@ public class Main {
         }
 
         if (store.getProducedCount() == 48) {
-            textArea.append("Producatorul special a generat: " + (new Random().nextInt(100) * 2) + ". Total generat: " + (store.getProducedCount() + 1) + "\n");
-            textArea.append("Stocul final:\n");
-            textArea.append(store.getStockList().toString() + "\n");
+            System.out.println("Special producer generated: " + (new Random().nextInt(100) * 2) + ". Total generated: " + (store.getProducedCount() + 1));
+            System.out.println("Final stock:");
+            System.out.println(store.getStockList());
         }
 
-        textArea.append("Toți producătorii și consumatorii au terminat. Programul se încheie.\n");
+        System.out.println("All producers and consumers have finished. Exiting program.");
     }
 }
